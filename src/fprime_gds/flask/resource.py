@@ -87,8 +87,11 @@ class HistoryResourceBase(Resource):
         # Get the new items from history ensuring it is clear in a fail-safe attempt to repeat recuring errors
         try:
             session = args.get("session")
+            id = args.get("id")
+            start = args.get("start")
+            end = args.get("end")
             limit = args.get("limit") if args.get("limit") is not None else 2000
-            new_items = self.history.retrieve(session, int(limit))
+            new_items = self.history.retrieve(session, int(limit), id=id, start=start, end=end)
             validation = -1
             if hasattr(self.history, "get_seen_count"):
                 validation = self.history.get_seen_count(session)

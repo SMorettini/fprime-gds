@@ -10,6 +10,9 @@ from typing import Type
 
 from fprime_gds.common.history.history import History
 from fprime_gds.common.history.ram import RamHistory
+from fprime_gds.common.history.mongo import MongoDBHistory
+from fprime_gds.common.pipeline.dictionaries import Dictionaries
+
 
 
 class Histories:
@@ -23,13 +26,23 @@ class Histories:
 
     def __init__(self):
         """Constructor of histories composer"""
+        from pymongo import MongoClient
+
+        # MongoDB connection parameters
+        mongo_host = 'localhost'  # MongoDB host
+        mongo_port = 27017  # MongoDB port
+        self.database_name = 'fprimedb'  # Name of the MongoDB database
+
+        # Create a MongoClient instance
+        self.mongo_client = MongoClient(mongo_host, mongo_port)
+
         self.coders = None
         self._command_hist = None
         self._event_hist = None
         self._channel_hist = None
         self._implementation_type = RamHistory
 
-    def setup_histories(self, coders):
+    def setup_histories(self, coders, dictionaries:Dictionaries):
         """
         Setup a set of history objects in order to store the events of the decoders. This registers itself with the
         supplied coders object.
@@ -40,7 +53,8 @@ class Histories:
         # Create histories, RAM histories for now
         self.commands = self._implementation_type()
         self.events = self._implementation_type()
-        self.channels = self._implementation_type()
+        #Mongodb suppport only channels for now
+        self.channels = MongoDBHistory(self.mongo_client, self.database_name, dictionaries.channel_name)
 
     @property
     def implementation(self):

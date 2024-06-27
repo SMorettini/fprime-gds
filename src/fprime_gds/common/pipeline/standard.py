@@ -88,7 +88,7 @@ class StandardPipeline:
         self.coders.setup_coders(
             self.dictionaries, self.distributor, self.client_socket, config
         )
-        self.histories.setup_histories(self.coders)
+        self.histories.setup_histories(self.coders, self.dictionaries)
         self.files.setup_file_handling(
             self.down_store,
             self.coders.file_encoder,
